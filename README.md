@@ -1,5 +1,12 @@
 # Unsubscribe links
 
+When we send emails we need to provide an option for receiver to unsubscribe
+from those email, aka unsubscribe links.
+And of course, user does not need to log in to unsubscribe, but we want to make
+sure that nobody can gues the unsubscribe link.
+
+Let's start by adding a devise user and
+
 You can use
 https://api.rubyonrails.org/v5.2.2.1/classes/ActiveSupport/MessageVerifier.html
 to encode strings or id
