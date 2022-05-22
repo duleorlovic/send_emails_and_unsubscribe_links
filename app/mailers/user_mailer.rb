@@ -17,7 +17,7 @@ class UserMailer < ApplicationMailer
   #
   #   en.user_mailer.weekly_news.subject
   #
-  def weekly_news(user)
+  def weekly_news(user, message)
     @user = user
     @content = "Last week you have 10 views"
 

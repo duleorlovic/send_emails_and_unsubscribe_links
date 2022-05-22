@@ -3,9 +3,9 @@ require "test_helper"
 class ApplicationMailerTest < ActionMailer::TestCase
   test "creates email object and send email" do
     user = users(:user)
-    assert_difference "Email.count" do
-      assert_difference "ActionMailer::Base.deliveries.size"  do
-        UserMailer.weekly_news(user).deliver_now
+    assert_difference "Email.count", 1 do
+      assert_difference "ActionMailer::Base.deliveries.size", 1  do
+        UserMailer.weekly_news(user, "news").deliver_now
       end
     end
   end
@@ -15,12 +15,12 @@ class ApplicationMailerTest < ActionMailer::TestCase
     UnsubscribeService.new(user).perform_for_action("weekly_news")
     assert_difference "Email.count", 0 do
       assert_difference "ActionMailer::Base.deliveries.size", 0  do
-        UserMailer.weekly_news(user).deliver_now
+        UserMailer.weekly_news(user, "news").deliver_now
       end
     end
 
-    assert_difference "Email.count" do
-      assert_difference "ActionMailer::Base.deliveries.size"  do
+    assert_difference "Email.count", 1 do
+      assert_difference "ActionMailer::Base.deliveries.size", 1  do
         UserMailer.new_message(user, "Hi").deliver_now
       end
     end

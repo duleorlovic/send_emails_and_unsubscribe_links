@@ -1,3 +1,10 @@
-user:
-  email: my@email.com
+DEFAULTS: &DEFAULTS
+  email: $LABEL@email.com
   encrypted_password: <%= User.new.send(:password_digest, 'password') %>
+
+user:
+  <<: *DEFAULTS
+
+unsubscribed_user:
+  <<: *DEFAULTS
+  unsubscribe_email_groups: <%= Const.unsubscribe_group_to_email_action_names.keys %>

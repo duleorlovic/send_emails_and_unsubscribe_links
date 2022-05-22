@@ -1,13 +1,17 @@
-require "rails/commands/server/server_command" # used for Rails::Server::Options.new.parse!(ARGV)[:Port]
-# when we do not require this, than in "rails c" or "rails g migration asd"
+# https://github.com/duleorlovic/rails_helpers_and_const/blob/main/config/initializers/const.rb
+
+# For Rails::Server::Options.new.parse!(ARGV)[:Port] to work in c and sidekiq
+require "rails/commands" # we need this to sidekiq
+require "rails/commands/server/server_command" # we need this for rails c or rails g migration
 # there is an exception: uninitialized constant Rails::Server (NameError)
+# I tried with Rack::Server.new.options[:Port] but it always returns 9292
 
 module Const
   def self.common # rubocop:todo Metrics/MethodLength
     hash_or_error_if_key_does_not_exists(
       name: 'MyApp',
       # short_name is also use in config/sidekiq.yml and config/application.rb
-      short_name: 'myapp',
+      short_name: 'my_app',
       # default_url is required for links in email body or in links in controller
       # when url host is not available (for example rails console)
       # look below how default_url is used
@@ -27,7 +31,6 @@ module Const
 
   def self.unsubscribe_group_to_email_action_names
     hash_or_error_if_key_does_not_exists(
-      "transaction_emails" => [],
       "messages" => %w[ new_message ],
       "remainders" => %w[ weekly_news ],
     )

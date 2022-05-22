@@ -26,7 +26,7 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
 
   test "#unsubscribe successfully remainders" do
     user = users(:user)
-    mail = UserMailer.weekly_news user
+    mail = UserMailer.weekly_news user, "news"
     unsubscribe_link = mail.body.encoded.match(
       /<a href="(http:\S*)".*>unsubscribe<\/a>/
     ).captures.first
@@ -59,16 +59,16 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     user = users(:user)
     action = "new_message"
     token = UnsubscribeService.token_for_user_id_and_action user.id, action
-    post unsubscribe_post_path(token: token, unsubscribe_form: { groups: ["messages", "remainders", "transaction_emails"] })
+    post unsubscribe_post_path(token: token, unsubscribe_form: { groups: ["messages", "remainders"] })
     user.reload
     assert user.unsubscribe_email_groups.blank?, user.unsubscribe_email_groups
 
-    post unsubscribe_post_path(token: token, unsubscribe_form: { groups: ["messages", "transaction_emails"]})
+    post unsubscribe_post_path(token: token, unsubscribe_form: { groups: ["messages"]})
     user.reload
     assert_equal ["remainders"], user.unsubscribe_email_groups
 
     # reinclude remainders
-    post unsubscribe_post_path(token: token, unsubscribe_form: { groups: ["messages", "remainders", "transaction_emails"]})
+    post unsubscribe_post_path(token: token, unsubscribe_form: { groups: ["messages", "remainders"]})
     user.reload
     assert_equal [], user.unsubscribe_email_groups
   end

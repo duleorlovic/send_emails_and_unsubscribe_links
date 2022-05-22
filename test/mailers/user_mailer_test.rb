@@ -15,7 +15,7 @@ class UserMailerTest < ActionMailer::TestCase
 
   test "weekly_news contains unsubscribe_link" do
     user = users(:user)
-    mail = UserMailer.weekly_news user
+    mail = UserMailer.weekly_news user, "news"
     assert_equal "Weekly news", mail.subject
     assert_equal [user.email], mail.to
     assert_match "Last week", mail.body.encoded

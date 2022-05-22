@@ -44,6 +44,54 @@ https://api.rubyonrails.org/classes/ActiveSupport/MessageVerifier.html
   <%= link_to "unsubscribe", UnsubscribeService.link_to_unsubscribe_for_user_id_and_action(@user, controller.action_name) %>
 ```
 
+We will send repeated emails using sidekiq scheduler.
+We could avoid scheduler and trigger new job (with wait of one week) inside job
+(first job is triggered on user confirmation) but than we will have a lot of
+jobs in the queue
+
+```
+# app/controllers/devise/my_confirmations_controller.rb
+module Devise
+  class MyConfirmationsController < ConfirmationsController
+    def show
+      super do
+        if resource.confirmed?
+          sign_in resource
+          # **automated_task**
+          # prevent double remainders when user click on confirmation link twice
+          if resource.automated_task['add_photo_remainder_job'].blank?
+            AddPhotosReminderJob.set(wait: 1.week).perform_later resource.id
+            resource.automated_task['add_photo_remainder_job'] = 'started'
+            resource.save!
+          end
+        end
+      end
+    end
+  end
+end
+
+# app/jobs/add_photos_reminder_job.rb
+class AddPhotosReminderJob < ApplicationJob
+  queue_as :default
+
+  def perform(user_id)
+    user = User.find_by id: user_id
+    return if user.blank?
+    return if user.member_pictures.present?
+
+    # **automated_task**
+    AdminMailer.add_photos(user).deliver_now
+    AddPhotosReminderJob.set(wait: 1.week).perform_later user.id
+  end
+end
+```
+
+so much simpler is to trigger sending email in sidekiq scheduler
+https://github.com/duleorlovic/sidekiq_tips
+
+We will create weekly remainder
+
+
 # Email providers
 
 There is nice table of [main
@@ -284,10 +332,13 @@ time rails runner 'UserMailer.signup.deliver_now!' # ~2.5sec with sparkpost
 # Letter opener for local preview
 
 ~~~
-sed -i '/group :development do/a  \
+sed -i "" '/group :development do/a  \
   # open emails in browser\
-  gem "letter_opener"' Gemfile
-sed -i '/^end$/i \  config.action_mailer.delivery_method = :letter_opener' config/environments/development.rb 
+  gem "letter_opener"
+' Gemfile
+sed -i "" '/^end$/i \
+  config.action_mailer.delivery_method = :letter_opener
+' config/environments/development.rb
 ~~~
 
 Note that email letter opener does not work when you run with `rake jobs:work`,

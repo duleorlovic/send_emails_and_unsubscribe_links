@@ -54,6 +54,8 @@ group :development, :test do
 end
 
 group :development do
+  # open emails in browser
+  gem "letter_opener"
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
 
@@ -73,3 +75,6 @@ end
 
 # user authentication
 gem 'devise'
+
+gem "sidekiq", "~> 6.4"
+gem "sidekiq-scheduler", "~> 4.0"
