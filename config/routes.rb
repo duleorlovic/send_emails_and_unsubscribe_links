@@ -6,4 +6,7 @@ Rails.application.routes.draw do
 
   root "pages#index"
   get 'sign-in-development/:id', to: 'pages#sign_in_development', as: :sign_in_development
+
+  get 'pages/unsubscribe', to: "pages#unsubscribe", as: :unsubscribe
+  post 'pages/unsubscribe', to: "pages#unsubscribe_post", as: :unsubscribe_post
 end

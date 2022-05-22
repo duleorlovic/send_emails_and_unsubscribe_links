@@ -1,0 +1,13 @@
+<h1>Unsubscribe <%= @unsubscribe_form.user.email %></h1>
+
+<%= form_with model: @unsubscribe_form, url: unsubscribe_post_path(token: params[:token]) do |f| %>
+  <ul>
+    <% Const.unsubscribe_group_to_email_action_names.each do |group, email_actions| %>
+      <li>
+        <%= f.label group, for: group %>
+        <%= f.check_box "groups", { multiple: true, checked: !f.object.user.unsubscribe_email_groups.include?(group), id: group }, group  %>
+      </li>
+    <% end %>
+  </ul>
+  <%= f.submit "Save" %>
+<% end %>

@@ -3,7 +3,7 @@
   <small>
     Only on development or staging
     <dl>
-      <dt>user</dt>
+      <dt>Users:</dt>
       <dd>
         <% User.order(:created_at).limit(5).each do |user| %>
           <%= link_to user.email, sign_in_development_path(user) %>

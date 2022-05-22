@@ -1,1 +1,2 @@
 <%= yield %>
+If you don't want to receive <%= UnsubscribeService.group_for_email_action_name controller.action_name %> emails from <%= Const.common[:name] %>, please <%= link_to "unsubscribe", UnsubscribeService.link_to_unsubscribe_for_user_id_and_action(@user.id, controller.action_name) %>.

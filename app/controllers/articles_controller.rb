@@ -25,6 +25,7 @@ class ArticlesController < ApplicationUserController
 
     respond_to do |format|
       if @article.save
+        UserMailer.new
         format.html { redirect_to article_url(@article), notice: "Article was successfully created." }
         format.json { render :show, status: :created, location: @article }
       else

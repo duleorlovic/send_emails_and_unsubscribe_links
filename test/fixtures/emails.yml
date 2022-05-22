@@ -1,0 +1,4 @@
+email:
+  user: user
+  to: my@email.com
+  subject: My Subject
